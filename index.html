@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serviço Inventory</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            margin: 5px 0;
+            padding: 10px;
+            width: 100%;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        textarea, input {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao serviço Inventory</h1>
+        <p>Escolha uma das opções abaixo:</p>
+        <button onclick="adicionarItem()">Adicionar item ao estoque</button>
+        <button onclick="visualizarEstoque()">Visualizar estoque</button>
+        <button onclick="atualizarPreco()">Atualizar preços</button>
+        <button onclick="atualizarQuantidade()">Atualizar disponibilidade</button>
+        <button onclick="encerrarServico()">Encerrar o serviço</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        let listaNomes = [];
+        let listaQuantidade = [];
+        let listaPreco = [];
+
+        function adicionarItem() {
+            let nome = prompt("Nome do item:");
+            let quantidade = parseInt(prompt("Quantidade:"));
+            let preco = parseFloat(prompt("Preço:"));
+
+            if (nome && !isNaN(quantidade) && !isNaN(preco)) {
+                listaNomes.push(nome);
+                listaQuantidade.push(quantidade);
+                listaPreco.push(preco);
+                alert(`${quantidade} unidades de ${nome} adicionadas ao estoque com preço de R$ ${preco} cada.`);
+            } else {
+                alert("Entrada inválida. Tente novamente.");
+            }
+        }
+
+        function visualizarEstoque() {
+            let output = "<h3>Estoque Atual:</h3>";
+            for (let i = 0; i < listaNomes.length; i++) {
+                output += `<p>${listaNomes[i]} - ${listaQuantidade[i]} unidades - R$ ${listaPreco[i].toFixed(2)}</p>`;
+            }
+            document.getElementById("output").innerHTML = output || "<p>Estoque vazio.</p>";
+        }
+
+        function atualizarPreco() {
+            let lista = "";
+            for (let i = 0; i < listaNomes.length; i++) {
+                lista += `${i + 1}- ${listaNomes[i]}: R$ ${listaPreco[i].toFixed(2)}\n`;
+            }
+
+            let escolha = parseInt(prompt("Itens disponíveis:\n" + lista + "Digite o número do item que deseja atualizar o preço:")) - 1;
+
+            if (escolha >= 0 && escolha < listaNomes.length) {
+                let novoPreco = parseFloat(prompt("Digite o novo preço:"));
+                if (!isNaN(novoPreco)) {
+                    listaPreco[escolha] = novoPreco;
+                    alert(`Preço de ${listaNomes[escolha]} atualizado para R$ ${novoPreco.toFixed(2)}.`);
+                } else {
+                    alert("Entrada inválida. Tente novamente.");
+                }
+            } else {
+                alert("Item não encontrado.");
+            }
+        }
+
+        function atualizarQuantidade() {
+            let lista = "";
+            for (let i = 0; i < listaNomes.length; i++) {
+                lista += `${i + 1}- ${listaNomes[i]}: ${listaQuantidade[i]} unidades\n`;
+            }
+
+            let escolha = parseInt(prompt("Itens disponíveis:\n" + lista + "Digite o número do item que deseja atualizar a disponibilidade:")) - 1;
+
+            if (escolha >= 0 && escolha < listaNomes.length) {
+                let novaQuantidade = parseInt(prompt("Digite a nova quantidade:"));
+                if (!isNaN(novaQuantidade)) {
+                    listaQuantidade[escolha] = novaQuantidade;
+                    alert(`Quantidade de ${listaNomes[escolha]} atualizada para ${novaQuantidade} unidades.`);
+                } else {
+                    alert("Entrada inválida. Tente novamente.");
+                }
+            } else {
+                alert("Item não encontrado.");
+            }
+        }
+
+        function encerrarServico() {
+            let csv = "Nome;Quantidade;Preco\n";
+            for (let i = 0; i < listaNomes.length; i++) {
+                csv += `${listaNomes[i]};${listaQuantidade[i]};${listaPreco[i].toFixed(2)}\n`;
+            }
+
+            let blob = new Blob([csv], { type: "text/csv" });
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "estoque.csv";
+            link.click();
+
+            alert("Serviço encerrado. O arquivo 'estoque.csv' foi gerado.");
+        }
+    </script>
+</body>
+</html>
